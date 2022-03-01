@@ -68,19 +68,21 @@
                     </div>
                 </form>
 
-                <p>Hiện tại đang có <strong id="number-of-codes">-</strong> mã sự kiện</p>
+                <!-- <p>Hiện tại đang có <strong id="number-of-codes">-</strong> mã sự kiện</p> -->
 
                 <h3>Danh sách mã</h3>
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
+                            <th width="1%">#</th>
                             <th>Mã sự kiện</th>
+                            <th width="30%">Thời gian đăng mã</th>
                         </tr>
                     </thead>
-                    <tbody id="event-code-body">
+                    <tbody id="event-code-body-list">
                         <tr>
                             <td colspan="1">
-                                <center>Chưa có mã nào để hiển thị</center>
+                                <center>Đang tải...</center>
                             </td>
                         </tr>
                     </tbody>
@@ -107,6 +109,37 @@
     <script src="./assets/js/mdtoast.min.js"></script>
     <script src="./assets/js/jquery.json-editor.min.js"></script>
     <script>
+        $(document).ready(function (e) {
+            $.ajax({
+                type: "GET",
+                url: "https://dvmobifone.vn/outsource/event-code/list.html",
+                contentType: "application/json",
+                success: function (result) {
+                    if (Array.isArray(result.data)) {
+                        var result_child = ""
+
+                        var i = 0
+                        for (const r of result.data) {
+                            result_child +=
+                                `<tr>
+                                    <td>${++i}</td>
+                                    <td>${r.code}</td>
+                                    <td>${timeSince(new Date(parseInt(r.code_created_time)))}</td>
+                                <tr>`
+                        }
+
+                        $("#event-code-body-list").html(result_child)
+                    }
+                },
+                error: function (error) {
+                    if (error.responseJSON)
+                        showMessage(error.responseJSON.message, mdtoast.ERROR)
+                    else
+                        showMessage(error.statusText, mdtoast.ERROR)
+                }
+            })
+        })
+
         $("#share-code-form").submit(function (e) {
             e.preventDefault()
             const EVENT_CODE = $("#event-code").val()
@@ -134,6 +167,35 @@
                 }
             })
         })
+
+        // @credit: https://stackoverflow.com/questions/3177836/how-to-format-time-since-xxx-e-g-4-minutes-ago-similar-to-stack-exchange-site
+        function timeSince(date) {
+            var seconds = Math.floor((new Date() - date) / 1000);
+
+            var interval = seconds / 31536000;
+
+            if (interval > 1) {
+                return Math.floor(interval) + " năm trước";
+            }
+            interval = seconds / 2592000;
+            if (interval > 1) {
+                return Math.floor(interval) + " tháng trước";
+            }
+            interval = seconds / 86400;
+            if (interval > 1) {
+                return Math.floor(interval) + " ngày trước";
+            }
+            interval = seconds / 3600;
+            if (interval > 1) {
+                return Math.floor(interval) + " giờ trước";
+            }
+            interval = seconds / 60;
+            if (interval > 1) {
+                return Math.floor(interval) + " phút trước";
+            }
+
+            return Math.floor(seconds) + " giây trước";
+        }
 
         function showMessage(text, type = mdtoast.INFO) {
             mdtoast(text, { duration: 3000, type: type, init: true }).show()
