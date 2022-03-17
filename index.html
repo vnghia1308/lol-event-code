@@ -92,8 +92,8 @@
                     </thead>
                     <tbody id="event-code-body-list">
                         <tr>
-                            <td colspan="1">
-                                <center>Đang tải...</center>
+                            <td colspan="3">
+                                <center>Sự kiện đã kết thúc</center>
                             </td>
                         </tr>
                     </tbody>
@@ -111,9 +111,9 @@
     <script src="./assets/js/jquery.json-editor.min.js"></script>
     <script>
         $(document).ready(function (e) {
-            $.ajax({
+            /**$.ajax({
                 type: "GET",
-                url: "https://dvmobifone.vn/outsource/event-code/list.html",
+                url: "https://-/outsource/event-code/list.html",
                 contentType: "application/json",
                 success: function (result) {
                     if (Array.isArray(result.data)) {
@@ -138,7 +138,7 @@
                     else
                         showMessage(error.statusText, mdtoast.ERROR)
                 }
-            })
+            })**/
         })
 
         $("#share-code-form").submit(function (e) {
